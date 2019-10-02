@@ -5,10 +5,8 @@ from config import LOGIN
 
 @pytest.fixture(scope="function", params=[
     ("Administrator", False),
-    ("12345", False),
-    ("IlonMask", False),
     ("admin", True),
-    ("admin0303", False),
+    ("IlonMask", True),
     ("admin", True)])
 def get_pass(request):
     """
@@ -33,8 +31,10 @@ def test_login(get_pass):
         Произвожу попытку логина под логином Administrator и очередным паролем
         Ожидаю элемент, существующий на авторизированной странице
             FIX: не самое лучшее решение
-        Удаляю cookie данные для следующего теста
         Сохраняю результат тестирования
+        Удаляю cookie данные для следующего теста
+        Закрываю браузер для последующего чистого открытия с новым набором данных
+
     """
     (password, result) = get_pass
     firefox = login("http://localhost/login_page.php", LOGIN, password)
@@ -44,6 +44,5 @@ def test_login(get_pass):
     except AssertionError:
         test_result = False
     logout(firefox)
+    firefox.close()
     assert test_result == result
-
-
